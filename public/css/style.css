@@ -1,0 +1,178 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+/* Music Style */
+
+.group::after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+body {
+}
+
+.music {
+	font-family: 'Nunito', sans-serif;
+	background: rgb(38, 44, 80);
+	color: #FFF;
+	width: 400px;
+	margin: 0 auto;
+
+}
+
+.player {
+	    background-size: cover!important;
+}
+
+.info {
+    padding: 10px;
+}
+
+.thum, .nowplay, .list-thumb, .song {
+	display: inline-block;
+	float: left;
+}
+
+.thum {
+}
+
+.thum img {
+	width: 73px;
+	height: 73px;
+}
+
+.thum > img {
+	width: 73px;
+height: 73px;
+}
+
+.nowplay {
+	margin-top: 16px;
+margin-left: 10px;
+}
+
+.nowplay > h3 {
+	    font-size: 1.4em;
+		font-weight: bold;
+}
+
+.nowplay > p {
+	margin-top: 4px;
+font-size: .9em;
+}
+
+.control {
+	text-align: center;
+    padding: 10px 0;
+    border: 1px solid #FFF;
+}
+
+.control a {
+	display: inline-block;
+}
+
+.control a img {
+    width: 50px;
+}
+
+.left {
+}
+
+.left > img, .right > img  {
+	width: 40px!important;
+	margin-bottom: 4px;
+}
+
+.play {
+	margin: 0 6px;
+}
+
+.play > img {
+}
+
+.right {
+}
+
+.right > img {
+}
+
+.songs {
+}
+
+.songs > ul {
+}
+
+.songs > ul > li {
+	padding: 5px 10px;
+	border-bottom: 1px solid #DDD;
+	cursor: pointer;
+}
+
+.music-item {
+
+}
+
+.list-thumb {
+}
+
+.list-thumb > img {
+	width: 60px;
+	    height: 60px;
+}
+
+.song {
+	margin-top: 13px;
+margin-left: 10px;
+}
+
+.song > h3 {
+	    font-size: 1.1em;
+		margin-bottom: 3px;
+}
+
+.song > p {
+	font-size: 0.9em;
+}

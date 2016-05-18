@@ -1,5 +1,6 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-var List = require('./components/List.jsx');
+var ReactMusic = require('./components/ReactMusic.jsx');
+var MusicData = require('./data.js');
 
-ReactDOM.render(<List />, document.getElementById('cat'));
+ReactDOM.render(<ReactMusic musics={MusicData} />, document.getElementById('play-music'));

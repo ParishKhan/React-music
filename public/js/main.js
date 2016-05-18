@@ -19491,50 +19491,253 @@ module.exports = require('./lib/React');
 
 },{"./lib/React":55}],168:[function(require,module,exports){
 var React = require('react');
-var ListItem = require('./ListItem.jsx');
-// Dummy data
-var coolCats = [{ "id": 1, "name": "pew" }, { "id": 2, "name": "mew" }, { "id": 3, "name": "wof" }];
 
-var List = React.createClass({
-    displayName: 'List',
+var Controller = React.createClass({
+    displayName: "Controller",
 
+    componentDidUpdate: function () {},
+    _initMusic: function () {
+        if (this.props.playNow == true) {
+            this._pauseSong();
+        } else {
+            this._playSong();
+        }
+    },
+    _playSong: function () {
+        this.refs.audios.play();
+        this.refs.pp.attributes.src.value = "images/pause.svg";
+        this.props._oninitMusic(true);
+    },
+    _pauseSong: function () {
+        this.refs.audios.pause();
+        this.refs.pp.attributes.src.value = "images/play.svg";
+        this.props._oninitMusic(false);
+    },
+    _ended: function () {
+        this.refs.pp.attributes.src.value = "images/play.svg";
+        this.props._oninitMusic(false);
+    },
     render: function () {
-        var cats = coolCats.map(function (coolCat) {
-            return React.createElement(ListItem, { key: coolCat.id, cat: coolCat.name });
-        });
-
         return React.createElement(
-            'ul',
-            null,
-            cats
+            "div",
+            { className: "control" },
+            React.createElement(
+                "a",
+                { href: "#", className: "left" },
+                React.createElement("img", { src: "images/left.svg", alt: "" })
+            ),
+            React.createElement(
+                "a",
+                { href: "#", className: "play", onClick: this._initMusic },
+                React.createElement("img", { ref: "pp", src: "images/play.svg", alt: "" })
+            ),
+            React.createElement(
+                "a",
+                { href: "#", className: "right" },
+                React.createElement("img", { src: "images/right.svg", alt: "" })
+            ),
+            React.createElement(
+                "audio",
+                { src: this.props.songNow.song, ref: "audios", onEnded: this._ended },
+                React.createElement(
+                    "p",
+                    null,
+                    "Your browser does not support the ",
+                    React.createElement(
+                        "code",
+                        null,
+                        "audio"
+                    ),
+                    " element."
+                )
+            )
         );
     }
 });
 
-module.exports = List;
+module.exports = Controller;
 
-},{"./ListItem.jsx":169,"react":167}],169:[function(require,module,exports){
+},{"react":167}],169:[function(require,module,exports){
 var React = require('react');
 
-var ListItem = React.createClass({
-    displayName: 'ListItem',
+var CurrentPlay = React.createClass({
+    displayName: "CurrentPlay",
 
     render: function () {
         return React.createElement(
-            'li',
-            null,
-            this.props.cat
+            "div",
+            { className: "info group" },
+            React.createElement(
+                "div",
+                { className: "thum" },
+                React.createElement("img", { src: this.props.songNow.thumb, alt: this.props.songNow.name })
+            ),
+            React.createElement(
+                "div",
+                { className: "nowplay" },
+                React.createElement(
+                    "h3",
+                    null,
+                    this.props.songNow.name
+                ),
+                React.createElement(
+                    "p",
+                    null,
+                    this.props.songNow.artist
+                )
+            )
         );
     }
 });
 
-module.exports = ListItem;
+module.exports = CurrentPlay;
 
 },{"react":167}],170:[function(require,module,exports){
 var React = require('react');
+var CurrentPlay = require('./CurrentPlay.jsx');
+var Controller = require('./Controller.jsx');
+
+var MainPlayer = React.createClass({
+    displayName: 'MainPlayer',
+
+    _oninitMusic: function (play) {
+        this.props._oninitMusic(play);
+    },
+    render: function () {
+        var bg = this.props.songNow.thumb;
+        var divStyle = {
+            background: "linear-gradient(to right bottom, rgba(209, 67, 72, 0.498039), rgb(114, 166, 92)), url(" + bg + ")"
+        };
+
+        return React.createElement(
+            'div',
+            { className: 'player', style: divStyle },
+            React.createElement(CurrentPlay, { songNow: this.props.songNow }),
+            React.createElement(Controller, { _oninitMusic: this._oninitMusic, playNow: this.props.playNow, songNow: this.props.songNow })
+        );
+    }
+});
+
+module.exports = MainPlayer;
+
+},{"./Controller.jsx":168,"./CurrentPlay.jsx":169,"react":167}],171:[function(require,module,exports){
+var React = require('react');
+var MainPlayer = require('./MainPlayer.jsx');
+var SongsList = require('./SongsList.jsx');
+
+var ReactMusic = React.createClass({
+    displayName: 'ReactMusic',
+
+    getInitialState: function () {
+        return {
+            playNow: false,
+            songNow: this.props.musics[0]
+        };
+    },
+    _oninitMusic: function (play) {
+        this.setState({
+            playNow: play
+        });
+    },
+    _onChangeSong: function (music) {
+        this.setState({
+            songNow: music
+        });
+    },
+    render: function () {
+        return React.createElement(
+            'div',
+            { className: 'music' },
+            React.createElement(MainPlayer, { _oninitMusic: this._oninitMusic, playNow: this.state.playNow, songNow: this.state.songNow }),
+            React.createElement(SongsList, { _onChangeSong: this._onChangeSong, musics: this.props.musics })
+        );
+    }
+});
+
+module.exports = ReactMusic;
+
+},{"./MainPlayer.jsx":170,"./SongsList.jsx":172,"react":167}],172:[function(require,module,exports){
+var React = require('react');
+var SongsListItem = require('./SongsListItem.jsx');
+
+var SongsList = React.createClass({
+    displayName: 'SongsList',
+
+    _onChangeSong: function (music) {
+        this.props._onChangeSong(music);
+    },
+    render: function () {
+        var rows = [];
+        this.props.musics.forEach(function (music) {
+            rows.push(React.createElement(SongsListItem, { music: music, key: music.name, _onChangeSong: this._onChangeSong }));
+        }, this);
+        return React.createElement(
+            'div',
+            { className: 'songs' },
+            React.createElement(
+                'ul',
+                null,
+                rows
+            )
+        );
+    }
+});
+
+module.exports = SongsList;
+
+},{"./SongsListItem.jsx":173,"react":167}],173:[function(require,module,exports){
+var React = require('react');
+
+var SongsListItem = React.createClass({
+    displayName: "SongsListItem",
+
+    _changeSong: function () {
+        this.props._onChangeSong(this.props.music);
+    },
+    render: function () {
+        return React.createElement(
+            "li",
+            { onClick: this._changeSong },
+            React.createElement(
+                "div",
+                { className: "music-item group" },
+                React.createElement(
+                    "div",
+                    { className: "list-thumb" },
+                    React.createElement("img", { src: this.props.music.thumb, alt: this.props.music.name })
+                ),
+                React.createElement(
+                    "div",
+                    { className: "song" },
+                    React.createElement(
+                        "h3",
+                        null,
+                        this.props.music.name
+                    ),
+                    React.createElement(
+                        "p",
+                        null,
+                        this.props.music.artist
+                    )
+                )
+            )
+        );
+    }
+});
+
+module.exports = SongsListItem;
+
+},{"react":167}],174:[function(require,module,exports){
+var MUSICS = [{ name: 'Amazing Lee', artist: 'Composition', song: 'http://downloadfreebd.com/ariful/data/musics/AmazingLee.mp3', thumb: 'http://downloadfreebd.com/ariful/data/images/thumb1.jpg' }, { name: 'Eque Kenox', artist: 'Elephant Game', song: 'http://downloadfreebd.com/ariful/data/musics/EqueKenox.mp3', thumb: 'http://downloadfreebd.com/ariful/data/images/thumb2.jpg' }, { name: 'Night Kitty', artist: 'Night Kitty', song: 'http://downloadfreebd.com/ariful/data/musics/NightKitty.mp3', thumb: 'http://downloadfreebd.com/ariful/data/images/thumb3.jpg' }, { name: 'Phoebex', artist: 'bikearama', song: 'http://downloadfreebd.com/ariful/data/musics/Phoebex.mp3', thumb: 'http://downloadfreebd.com/ariful/data/images/thumb4.jpg' }, { name: 'Shiloah', artist: 'View Source', song: 'http://downloadfreebd.com/ariful/data/musics/Shiloah.mp3', thumb: 'http://downloadfreebd.com/ariful/data/images/thumb5.jpg' }];
+
+module.exports = MUSICS;
+
+},{}],175:[function(require,module,exports){
+var React = require('react');
 var ReactDOM = require('react-dom');
-var List = require('./components/List.jsx');
+var ReactMusic = require('./components/ReactMusic.jsx');
+var MusicData = require('./data.js');
 
-ReactDOM.render(React.createElement(List, null), document.getElementById('cat'));
+ReactDOM.render(React.createElement(ReactMusic, { musics: MusicData }), document.getElementById('play-music'));
 
-},{"./components/List.jsx":168,"react":167,"react-dom":29}]},{},[170]);
+},{"./components/ReactMusic.jsx":171,"./data.js":174,"react":167,"react-dom":29}]},{},[175]);
