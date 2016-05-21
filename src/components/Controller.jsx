@@ -17,14 +17,11 @@ var Controller = React.createClass({
     },
     _ended: function() {
         this.refs.pp.attributes.src.value = "http://downloadfreebd.com/ariful/data/images/play.svg";
-    //    this.props._oninitMusic(false);
     },
     _play: function(){
-        console.log("Goo");
         this.refs.pp.attributes.src.value = "http://downloadfreebd.com/ariful/data/images/pause.svg";
     },
     _pause: function() {
-        console.log("Goo2");
         this.refs.pp.attributes.src.value = "http://downloadfreebd.com/ariful/data/images/play.svg";
     },
     _right: function() {
