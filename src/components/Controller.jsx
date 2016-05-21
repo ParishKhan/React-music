@@ -1,38 +1,50 @@
 var React = require('react');
 
 var Controller = React.createClass({
-    componentDidUpdate: function() {
-
+    componentWillUpdate: function() {
+        this.refs.audios.pause();
     },
-    _initMusic: function() {
-        if(this.props.playNow == true) {
-            this._pauseSong();
+    componentDidUpdate: function() {
+        this.refs.audios.play();
+    },
+    _initMusic: function(e) {
+        e.preventDefault();
+        if(this.refs.audios.duration > 0 && !this.refs.audios.paused) {
+            this.refs.audios.pause();
         } else {
-            this._playSong()
+            this.refs.audios.play();
         }
     },
-    _playSong: function() {
-        this.refs.audios.play();
-        this.refs.pp.attributes.src.value = "images/pause.svg";
-        this.props._oninitMusic(true);
-    },
-    _pauseSong: function() {
-        this.refs.audios.pause();
-        this.refs.pp.attributes.src.value = "images/play.svg";
-        this.props._oninitMusic(false);
-    },
     _ended: function() {
-        this.refs.pp.attributes.src.value = "images/play.svg";
-        this.props._oninitMusic(false);
+        this.refs.pp.attributes.src.value = "http://downloadfreebd.com/ariful/data/images/play.svg";
+    //    this.props._oninitMusic(false);
+    },
+    _play: function(){
+        console.log("Goo");
+        this.refs.pp.attributes.src.value = "http://downloadfreebd.com/ariful/data/images/pause.svg";
+    },
+    _pause: function() {
+        console.log("Goo2");
+        this.refs.pp.attributes.src.value = "http://downloadfreebd.com/ariful/data/images/play.svg";
+    },
+    _right: function() {
+        this.props._onRightClick(this.props.songNow);
+    },
+    _left: function() {
+        this.props._onLeftClick(this.props.songNow);
     },
     render: function(){
         return (
             <div className="control">
-                <a href="#" className="left"><img src="images/left.svg" alt="" /></a>
-                <a href="#" className="play" onClick={this._initMusic} ><img ref="pp" src="images/play.svg" alt="" /></a>
-                <a href="#" className="right"><img src="images/right.svg" alt="" /></a>
-                <audio src={this.props.songNow.song} ref="audios" onEnded={this._ended}>
-                    <p>Your browser does not support the <code>audio</code> element.</p>
+                <a href="#" className="left" onClick={this._left} ><img src="http://downloadfreebd.com/ariful/data/images/left.svg" alt="" /></a>
+                <a href="#" className="play" onClick={this._initMusic} ><img ref="pp" src="http://downloadfreebd.com/ariful/data/images/play.svg" alt="" /></a>
+                <a href="#" className="right" onClick={this._right} ><img src="http://downloadfreebd.com/ariful/data/images/right.svg" alt="" /></a>
+
+                <audio
+                    src={this.props.songNow.song}
+                    ref="audios" onEnded={this._ended}
+                    onPause={this._pause}
+                    onPlay={this._play}>
                 </audio>
             </div>
         )

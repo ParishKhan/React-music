@@ -6,7 +6,7 @@ var SongsListItem = React.createClass({
     },
     render: function() {
         return (
-            <li onClick={this._changeSong}>
+            <li onClick={this._changeSong} ref="list">
                 <div className="music-item group">
                     <div className="list-thumb">
                         <img src={this.props.music.thumb} alt={this.props.music.name} />

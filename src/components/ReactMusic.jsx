@@ -9,9 +9,22 @@ var ReactMusic = React.createClass({
             songNow: this.props.musics[0]
         }
     },
-    _oninitMusic: function(play) {
+    _onRightClick: function(play) {
+        if(play.id === this.props.musics.length - 1)
+            var arr = 0;
+        else
+            var arr = play.id + 1;
         this.setState({
-            playNow: play
+            songNow: this.props.musics[arr]
+        });
+    },
+    _onLeftClick: function(play) {
+        if(play.id === 0)
+            var arr = this.props.musics.length - 1;
+        else
+            var arr = play.id - 1;
+        this.setState({
+            songNow: this.props.musics[arr]
         });
     },
     _onChangeSong: function(music) {
@@ -22,7 +35,7 @@ var ReactMusic = React.createClass({
     render: function() {
         return (
             <div className="music">
-                <MainPlayer _oninitMusic={this._oninitMusic} playNow={this.state.playNow} songNow={this.state.songNow} />
+                <MainPlayer _onRightClick={this._onRightClick} _onLeftClick={this._onLeftClick} playNow={this.state.playNow} songNow={this.state.songNow} />
                 <SongsList _onChangeSong={this._onChangeSong} musics={this.props.musics} />
             </div>
         )

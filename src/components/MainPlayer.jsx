@@ -4,8 +4,11 @@ var Controller = require('./Controller.jsx');
 
 
 var MainPlayer = React.createClass({
-    _oninitMusic: function(play) {
-        this.props._oninitMusic(play)
+    _onRightClick: function(play) {
+        this.props._onRightClick(play)
+    },
+    _onLeftClick: function(play) {
+        this.props._onLeftClick(play)
     },
     render: function(){
         var bg = this.props.songNow.thumb;
@@ -16,7 +19,7 @@ var MainPlayer = React.createClass({
         return (
             <div className="player" style={divStyle}>
                 <CurrentPlay songNow={this.props.songNow} />
-                <Controller _oninitMusic={this._oninitMusic} playNow={this.props.playNow} songNow={this.props.songNow} />
+                <Controller _onRightClick={this._onRightClick} _onLeftClick={this._onLeftClick} playNow={this.props.playNow} songNow={this.props.songNow} />
             </div>
         )
     }

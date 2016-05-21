@@ -19495,27 +19495,37 @@ var React = require('react');
 var Controller = React.createClass({
     displayName: "Controller",
 
-    componentDidUpdate: function () {},
-    _initMusic: function () {
-        if (this.props.playNow == true) {
-            this._pauseSong();
+    componentWillUpdate: function () {
+        this.refs.audios.pause();
+    },
+    componentDidUpdate: function () {
+        this.refs.audios.play();
+    },
+    _initMusic: function (e) {
+        e.preventDefault();
+        if (this.refs.audios.duration > 0 && !this.refs.audios.paused) {
+            this.refs.audios.pause();
         } else {
-            this._playSong();
+            this.refs.audios.play();
         }
     },
-    _playSong: function () {
-        this.refs.audios.play();
-        this.refs.pp.attributes.src.value = "images/pause.svg";
-        this.props._oninitMusic(true);
-    },
-    _pauseSong: function () {
-        this.refs.audios.pause();
-        this.refs.pp.attributes.src.value = "images/play.svg";
-        this.props._oninitMusic(false);
-    },
     _ended: function () {
-        this.refs.pp.attributes.src.value = "images/play.svg";
-        this.props._oninitMusic(false);
+        this.refs.pp.attributes.src.value = "http://downloadfreebd.com/ariful/data/images/play.svg";
+        //    this.props._oninitMusic(false);
+    },
+    _play: function () {
+        console.log("Goo");
+        this.refs.pp.attributes.src.value = "http://downloadfreebd.com/ariful/data/images/pause.svg";
+    },
+    _pause: function () {
+        console.log("Goo2");
+        this.refs.pp.attributes.src.value = "http://downloadfreebd.com/ariful/data/images/play.svg";
+    },
+    _right: function () {
+        this.props._onRightClick(this.props.songNow);
+    },
+    _left: function () {
+        this.props._onLeftClick(this.props.songNow);
     },
     render: function () {
         return React.createElement(
@@ -19523,34 +19533,24 @@ var Controller = React.createClass({
             { className: "control" },
             React.createElement(
                 "a",
-                { href: "#", className: "left" },
-                React.createElement("img", { src: "images/left.svg", alt: "" })
+                { href: "#", className: "left", onClick: this._left },
+                React.createElement("img", { src: "http://downloadfreebd.com/ariful/data/images/left.svg", alt: "" })
             ),
             React.createElement(
                 "a",
                 { href: "#", className: "play", onClick: this._initMusic },
-                React.createElement("img", { ref: "pp", src: "images/play.svg", alt: "" })
+                React.createElement("img", { ref: "pp", src: "http://downloadfreebd.com/ariful/data/images/play.svg", alt: "" })
             ),
             React.createElement(
                 "a",
-                { href: "#", className: "right" },
-                React.createElement("img", { src: "images/right.svg", alt: "" })
+                { href: "#", className: "right", onClick: this._right },
+                React.createElement("img", { src: "http://downloadfreebd.com/ariful/data/images/right.svg", alt: "" })
             ),
-            React.createElement(
-                "audio",
-                { src: this.props.songNow.song, ref: "audios", onEnded: this._ended },
-                React.createElement(
-                    "p",
-                    null,
-                    "Your browser does not support the ",
-                    React.createElement(
-                        "code",
-                        null,
-                        "audio"
-                    ),
-                    " element."
-                )
-            )
+            React.createElement("audio", {
+                src: this.props.songNow.song,
+                ref: "audios", onEnded: this._ended,
+                onPause: this._pause,
+                onPlay: this._play })
         );
     }
 });
@@ -19600,8 +19600,11 @@ var Controller = require('./Controller.jsx');
 var MainPlayer = React.createClass({
     displayName: 'MainPlayer',
 
-    _oninitMusic: function (play) {
-        this.props._oninitMusic(play);
+    _onRightClick: function (play) {
+        this.props._onRightClick(play);
+    },
+    _onLeftClick: function (play) {
+        this.props._onLeftClick(play);
     },
     render: function () {
         var bg = this.props.songNow.thumb;
@@ -19613,7 +19616,7 @@ var MainPlayer = React.createClass({
             'div',
             { className: 'player', style: divStyle },
             React.createElement(CurrentPlay, { songNow: this.props.songNow }),
-            React.createElement(Controller, { _oninitMusic: this._oninitMusic, playNow: this.props.playNow, songNow: this.props.songNow })
+            React.createElement(Controller, { _onRightClick: this._onRightClick, _onLeftClick: this._onLeftClick, playNow: this.props.playNow, songNow: this.props.songNow })
         );
     }
 });
@@ -19634,9 +19637,16 @@ var ReactMusic = React.createClass({
             songNow: this.props.musics[0]
         };
     },
-    _oninitMusic: function (play) {
+    _onRightClick: function (play) {
+        if (play.id === this.props.musics.length - 1) var arr = 0;else var arr = play.id + 1;
         this.setState({
-            playNow: play
+            songNow: this.props.musics[arr]
+        });
+    },
+    _onLeftClick: function (play) {
+        if (play.id === 0) var arr = this.props.musics.length - 1;else var arr = play.id - 1;
+        this.setState({
+            songNow: this.props.musics[arr]
         });
     },
     _onChangeSong: function (music) {
@@ -19648,7 +19658,7 @@ var ReactMusic = React.createClass({
         return React.createElement(
             'div',
             { className: 'music' },
-            React.createElement(MainPlayer, { _oninitMusic: this._oninitMusic, playNow: this.state.playNow, songNow: this.state.songNow }),
+            React.createElement(MainPlayer, { _onRightClick: this._onRightClick, _onLeftClick: this._onLeftClick, playNow: this.state.playNow, songNow: this.state.songNow }),
             React.createElement(SongsList, { _onChangeSong: this._onChangeSong, musics: this.props.musics })
         );
     }
@@ -19697,7 +19707,7 @@ var SongsListItem = React.createClass({
     render: function () {
         return React.createElement(
             "li",
-            { onClick: this._changeSong },
+            { onClick: this._changeSong, ref: "list" },
             React.createElement(
                 "div",
                 { className: "music-item group" },
@@ -19728,7 +19738,7 @@ var SongsListItem = React.createClass({
 module.exports = SongsListItem;
 
 },{"react":167}],174:[function(require,module,exports){
-var MUSICS = [{ name: 'Amazing Lee', artist: 'Composition', song: 'http://downloadfreebd.com/ariful/data/musics/AmazingLee.mp3', thumb: 'http://downloadfreebd.com/ariful/data/images/thumb1.jpg' }, { name: 'Eque Kenox', artist: 'Elephant Game', song: 'http://downloadfreebd.com/ariful/data/musics/EqueKenox.mp3', thumb: 'http://downloadfreebd.com/ariful/data/images/thumb2.jpg' }, { name: 'Night Kitty', artist: 'Night Kitty', song: 'http://downloadfreebd.com/ariful/data/musics/NightKitty.mp3', thumb: 'http://downloadfreebd.com/ariful/data/images/thumb3.jpg' }, { name: 'Phoebex', artist: 'bikearama', song: 'http://downloadfreebd.com/ariful/data/musics/Phoebex.mp3', thumb: 'http://downloadfreebd.com/ariful/data/images/thumb4.jpg' }, { name: 'Shiloah', artist: 'View Source', song: 'http://downloadfreebd.com/ariful/data/musics/Shiloah.mp3', thumb: 'http://downloadfreebd.com/ariful/data/images/thumb5.jpg' }];
+var MUSICS = [{ id: 0, name: 'Amazing Lee', artist: 'Composition', song: 'http://downloadfreebd.com/ariful/data/musics/AmazingLee.mp3', thumb: 'http://downloadfreebd.com/ariful/data/images/thumb1.jpg' }, { id: 1, name: 'Eque Kenox', artist: 'Elephant Game', song: 'http://downloadfreebd.com/ariful/data/musics/EqueKenox.mp3', thumb: 'http://downloadfreebd.com/ariful/data/images/thumb2.jpg' }, { id: 2, name: 'Night Kitty', artist: 'Night Kitty', song: 'http://downloadfreebd.com/ariful/data/musics/NightKitty.mp3', thumb: 'http://downloadfreebd.com/ariful/data/images/thumb3.jpg' }, { id: 3, name: 'Phoebex', artist: 'bikearama', song: 'http://downloadfreebd.com/ariful/data/musics/Phoebex.mp3', thumb: 'http://downloadfreebd.com/ariful/data/images/thumb4.jpg' }, { id: 4, name: 'Shiloah', artist: 'View Source', song: 'http://downloadfreebd.com/ariful/data/musics/Shiloah.mp3', thumb: 'http://downloadfreebd.com/ariful/data/images/thumb5.jpg' }];
 
 module.exports = MUSICS;
 
